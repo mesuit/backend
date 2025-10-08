@@ -21,10 +21,21 @@ app.use(limiter);
 // API routes
 app.use("/api", proxyRoutes);
 
+// Root route (for Render health check)
+app.get("/", (req, res) => {
+  res.send("🚀 Maka AI Backend is live!");
+});
+
 // Health check
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", nodeEnv: process.env.NODE_ENV || "production", now: Date.now() });
+  res.json({
+    status: "ok",
+    nodeEnv: process.env.NODE_ENV || "production",
+    now: Date.now(),
+  });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Maka AI backend running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`✅ Maka AI backend running on port ${PORT}`)
+);
