@@ -7,14 +7,35 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Explicit CORS configuration
+const allowedOrigins = [
+  "https://maka-ai-eight.vercel.app",
+  "http://localhost:3000"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Handle preflight OPTIONS requests
+app.options("*", cors());
+
 // Basic global rate limiter
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute window
-  max: 120, // max requests per IP per window
+  windowMs: 60 * 1000, // 1 minute
+  max: 120, // limit each IP to 120 requests per minute
 });
 app.use(limiter);
 
